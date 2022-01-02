@@ -1,7 +1,4 @@
-import dto.Action;
-import dto.Request;
-import dto.Response;
-import dto.UserForm;
+import dto.*;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.IOException;
@@ -13,11 +10,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Client {
-    private Socket clientSocket;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
-    private Scanner scanner;
-    List<String> userOnlines;
+    public static Socket clientSocket;
+    public static ObjectInputStream in;
+    public static ObjectOutputStream out;
+    public static Scanner scanner;
 
     private void sendRequest(Request req) throws IOException {
         this.out.writeObject(req);
@@ -44,17 +40,13 @@ public class Client {
             this.out = new ObjectOutputStream(clientSocket.getOutputStream());
             this.in = new ObjectInputStream(clientSocket.getInputStream());
             scanner = new Scanner(System.in);
-            userOnlines = new ArrayList<>();
             new ResponseProcess().start();
-            Request<String> connect= new Request<>();
-            connect.setAction(Action.CONNECT);
-            sendRequest(connect);
             while (true) {
                 System.out.println("Chose your options");
                 System.out.println("1: LOGIN");
-                System.out.println("2: SEND MESSAGE");
-                System.out.println("3: SEND ALL");
-                System.out.println("-1: ESC");
+                System.out.println("2: OFFER FOR PRODUCT");
+                System.out.println("3: XAC NHAN");
+                System.out.println("4: ESC");
 
                 String ch = scanner.next();
                 switch (ch) {
@@ -68,8 +60,19 @@ public class Client {
                         this.sendRequest(request);
                         break;
                     }
-                    case "-1": {
-                        Request<String> request= new Request<>();
+                    case "2": {
+                        OfferForm offerForm = new OfferForm();
+                        offerForm.setPrice(500);
+                        Request<OfferForm> request= new Request<>();
+                        request.setData(offerForm);
+                        request.setAction(Action.OFFER);
+                        this.sendRequest(request);
+                        break;
+                    }
+                    case "4": {
+                        Request<ExitForm> request= new Request<>();
+                        ExitForm form= new ExitForm();
+                        request.setData(form);
                         request.setAction(Action.DISCONNECT);
                         sendRequest(request);
                         close();
