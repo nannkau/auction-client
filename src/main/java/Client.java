@@ -5,9 +5,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Client {
     public static Socket clientSocket;
@@ -43,33 +42,37 @@ public class Client {
             new ResponseProcess().start();
             while (true) {
                 System.out.println("Chose your options");
-                System.out.println("1: LOGIN");
-                System.out.println("2: OFFER FOR PRODUCT");
-                System.out.println("3: XAC NHAN");
-                System.out.println("4: ESC");
+                System.out.println("LOGIN cú pháp login;username;password");
+                System.out.println("ra giá sản phẩm  cú pháp price;giá");
+                System.out.println("thoát cú pháp exit:ok");
 
                 String ch = scanner.next();
-                switch (ch) {
-                    case "1": {
+                StringTokenizer stringTokenizer= new StringTokenizer(ch,";");
+                String test1=stringTokenizer.nextToken();
+                switch (test1) {
+                    case "login": {
+                        String username=stringTokenizer.nextToken();
+                        String password=stringTokenizer.nextToken();
                         UserForm userForm= new UserForm();
-                        userForm.setUsername("admin");
-                        userForm.setPassword("123456");
+                        userForm.setUsername(username);
+                        userForm.setPassword(password);
                         Request<UserForm> request= new Request<>();
                         request.setData(userForm);
                         request.setAction(Action.LOGIN);
                         this.sendRequest(request);
                         break;
                     }
-                    case "2": {
+                    case "price": {
+                        String price =stringTokenizer.nextToken();
                         OfferForm offerForm = new OfferForm();
-                        offerForm.setPrice(500);
+                        offerForm.setPrice(Integer.valueOf(price));
                         Request<OfferForm> request= new Request<>();
                         request.setData(offerForm);
                         request.setAction(Action.OFFER);
                         this.sendRequest(request);
                         break;
                     }
-                    case "4": {
+                    case "exit": {
                         Request<ExitForm> request= new Request<>();
                         ExitForm form= new ExitForm();
                         request.setData(form);
